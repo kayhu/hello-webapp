@@ -1,0 +1,51 @@
+group = 'org.iakuh'
+version = '1.0-SNAPSHOT'
+
+apply plugin: 'war'
+apply plugin: 'idea'
+apply plugin: 'io.spring.dependency-management'
+
+sourceCompatibility = 1.8
+compileJava.options.encoding = 'UTF-8'
+compileTestJava.options.encoding = 'UTF-8'
+
+buildscript {
+    repositories {
+        maven { url 'http://maven.aliyun.com/nexus/content/groups/public' }
+        jcenter()
+        mavenLocal()
+        mavenCentral()
+        maven { url 'http://nexus.dianrong.com/nexus/content/groups/public/' }
+    }
+    dependencies {
+        classpath 'io.spring.gradle:dependency-management-plugin:1.0.0.RELEASE'
+    }
+}
+
+dependencyManagement {
+    imports {
+        mavenBom 'io.spring.platform:platform-bom:Brussels-SR6'
+    }
+}
+
+repositories {
+    maven { url 'http://maven.aliyun.com/nexus/content/groups/public' }
+    jcenter()
+    mavenLocal()
+    mavenCentral()
+    maven { url 'http://nexus.dianrong.com/nexus/content/groups/public/' }
+}
+
+dependencies {
+    compile 'org.springframework:spring-webmvc',
+            'com.fasterxml.jackson.core:jackson-core',
+            'com.fasterxml.jackson.core:jackson-databind',
+            'com.fasterxml.jackson.core:jackson-annotations',
+            'commons-logging:commons-logging'
+
+    providedCompile 'javax.servlet:javax.servlet-api'
+}
+
+task wrapper(type: Wrapper) {
+    gradleVersion = '2.14'
+}
