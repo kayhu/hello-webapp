@@ -1,5 +1,4 @@
 group = 'org.iakuh'
-version = '1.0-SNAPSHOT'
 
 apply plugin: 'war'
 apply plugin: 'idea'
@@ -11,11 +10,11 @@ compileTestJava.options.encoding = 'UTF-8'
 
 buildscript {
     repositories {
+        maven { url 'http://nexus.dianrong.com/nexus/content/groups/public/' }
         maven { url 'http://maven.aliyun.com/nexus/content/groups/public' }
         jcenter()
         mavenLocal()
         mavenCentral()
-        maven { url 'http://nexus.dianrong.com/nexus/content/groups/public/' }
     }
     dependencies {
         classpath 'io.spring.gradle:dependency-management-plugin:1.0.0.RELEASE'

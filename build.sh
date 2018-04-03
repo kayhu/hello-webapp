@@ -1,13 +1,15 @@
-buildImage() {
-  echo 'building image'
-  # 生成Dockerfile文件
-  echo "FROM ${FromImage}" > Dockerfile
-  cat >> Dockerfile << EOF
-  ${Dockerfile}
-  EOF
+#!/bin/bash
 
-  # 开始构建镜像
-  docker build --rm --no-cache=${NoCache} -t ${ToImage} .
+buildImage() {
+echo 'building image'
+# 生成Dockerfile文件
+echo "FROM ${FromImage}" > Dockerfile
+cat >> Dockerfile << EOF
+${Dockerfile}
+EOF
+
+# 开始构建镜像
+docker build --rm --no-cache=${NoCache} -t ${ToImage} .
 }
 
 if ! ${NoCache}
