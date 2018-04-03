@@ -6,13 +6,13 @@ NewImage=false
 buildImage() {
 echo "building image ${ToImage}"
 # 生成Dockerfile文件
-echo "FROM ${FromImage}" > Dockerfile
-cat >> Dockerfile << EOF
-${Dockerfile}
-EOF
+#echo "FROM ${FromImage}" > Dockerfile
+#cat >> Dockerfile << EOF
+#${Dockerfile}
+#EOF
 
 # 开始构建镜像
-docker build --rm --no-cache=${NoCache} -t ${ToImage} --label ${ToImage} .
+docker build --rm --no-cache=${NoCache} -t ${ToImage} .
 NewImage=true
 }
 
@@ -20,7 +20,7 @@ if ! ${NoCache}
 then
   # 检查当前版本的镜像是否已经存在， 镜像不存在则创建镜像
   echo "checking if image ${ToImage} exist"
-  docker images -f "label=${ToImage}" && echo "image ${ToImage} exists" || buildImage
+  docker image inspect ${ToImage} >/dev/null 2>&1 && echo "image ${ToImage} exists" || buildImage
 else
   # 创建镜像
   buildImage
@@ -49,7 +49,7 @@ do
   AppExpose=`echo ,${AppAddress#*,} | sed 's/,/ -p /g'`
   AppIp=`echo ${HostAddress%%_*} | sed 's/:.*//'`
   AppPort=`echo ${AppAddress#*,} | sed 's/:.*//'`
-  AppId=`echo ${AppOrg}_${AppEnv}_${AppName}_${AppIp}_${AppPort} | sed 's/[^a-zA-Z0-9_]//g' | tr "[:lower:]" "[:upper:]"`
+  AppId=`echo ${AppOrg}_${AppEnv}_${AppName}_${AppIp}_${AppPort} | sed 's/[^a-zA-Z0-9_]//g' | tr "[:upper:]" "[:lower:]"`
   AppHostname=`echo ${AppPort}-${AppIp}-${AppName}-${AppEnv}-${AppOrg} | sed 's/[^a-zA-Z0-9-]//g'| tr "[:upper:]" "[:lower:]"`
   RunImage=${ToImage%:*}:${GitBranch##*/}
 
@@ -70,6 +70,7 @@ do
 
   if ${NewImage}
   then
+    echo "deleting unused image ${LastImageId}"
     docker ${HostParam} rmi ${LastImageId} || echo # 删除之前的镜像
   fi
 
