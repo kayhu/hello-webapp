@@ -1,7 +1,10 @@
 #!/bin/bash
 
+# 是否新创建镜像
+NewImage=false
+
 buildImage() {
-echo 'building image'
+echo "building image ${ToImage}"
 # 生成Dockerfile文件
 echo "FROM ${FromImage}" > Dockerfile
 cat >> Dockerfile << EOF
@@ -9,14 +12,15 @@ ${Dockerfile}
 EOF
 
 # 开始构建镜像
-docker build --rm --no-cache=${NoCache} -t ${ToImage} .
+docker build --rm --no-cache=${NoCache} -t ${ToImage} --label ${ToImage} .
+NewImage=true
 }
 
 if ! ${NoCache}
 then
   # 检查当前版本的镜像是否已经存在， 镜像不存在则创建镜像
-  echo 'checking if image exist'
-  docker images | grep ${ToImage} && echo 'Image' ${ToImage} 'already exist' || buildImage
+  echo "checking if image ${ToImage} exist"
+  docker images -f "label=${ToImage}" && echo "image ${ToImage} exists" || buildImage
 else
   # 创建镜像
   buildImage
@@ -38,9 +42,9 @@ do
   HostAddress=${AppAddress%%,*}
   if ${RemoteHost}
   then
-    HostParam='-H '${HostAddress}
+    HostParam="-H ${HostAddress}"
   else
-    HostParam=''
+    HostParam=""
   fi
   AppExpose=`echo ,${AppAddress#*,} | sed 's/,/ -p /g'`
   AppIp=`echo ${HostAddress%%_*} | sed 's/:.*//'`
@@ -49,11 +53,10 @@ do
   AppHostname=`echo ${AppPort}-${AppIp}-${AppName}-${AppEnv}-${AppOrg} | sed 's/[^a-zA-Z0-9-]//g'| tr "[:upper:]" "[:lower:]"`
   RunImage=${ToImage%:*}:${GitBranch##*/}
 
-
   JmxPort=$(( AppPort + 10 ))
 
   docker ${HostParam} tag ${ToImage} ${RunImage} # 新增镜像Tag
-  RESULT=`docker ${HostParam} inspect -f '{{.Image}}' ${AppId} || echo 0` # 保留当前实例的镜像Id
+  LastImageId=`docker ${HostParam} inspect -f '{{.Image}}' ${AppId} || echo 0` # 保留当前实例的镜像Id
   docker ${HostParam} stop ${AppId} || echo # 停止当前实例
   docker ${HostParam} rm ${AppId} || echo # 删除当前实例
 
@@ -65,6 +68,9 @@ do
   -v ${LogBasePath}/${AppId}:/volume_logs -e UMASK=0022 \
   ${AppExpose} ${RunOptions} ${RunImage} ${RunCmd}
 
-  docker ${HostParam} rmi ${RESULT} || echo # 删除之前的镜像
+  if ${NewImage}
+  then
+    docker ${HostParam} rmi ${LastImageId} || echo # 删除之前的镜像
+  fi
 
 done
