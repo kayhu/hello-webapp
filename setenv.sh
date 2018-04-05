@@ -1,20 +1,26 @@
 #!/bin/bash
 
-export DOCKER_REGISTRY=registry.cn-hangzhou.aliyuncs.com
-export ProjectRecipientList=
-export AppOrg=iakuh
-export AppEnv=dev
-export AppName=hellowebapp
-export AppAddresses=localhost:2375,80:8080,443:8443
-export GitRepo=https://github.com/kayhu/hello-webapp.git
-export GitBranch=master
+# basic info
+export ORG=iakuh
+export ENV=dev
+export APP=hellowebapp
+
+# source code info
+export GIT_REPO=https://github.com/kayhu/hello-webapp.git
+export GIT_BRANCH=master
 export GIT_COMMIT=2
-export FromImage=${DOCKER_REGISTRY}/base/tomcat:8.5.29-jre8-gradle2.14.1
-export Dockerfile=
-export ToImage=${DOCKER_REGISTRY}/${AppOrg}/${AppName}-${AppEnv}:${GIT_COMMIT}
+
+# docker related info
+export DOCKER_ADDRESSES=localhost:2375,28080:8080,28000:8000
+export DOCKER_REGISTRY=registry.cn-hangzhou.aliyuncs.com
+export DOCKER_BASE_IMAGE=${DOCKER_REGISTRY}/base/tomcat:8.5.29-jre8-gradle2.14.1
+export DOCKER_IMAGE=${DOCKER_REGISTRY}/${ORG}/${APP}-${ENV}:${GIT_COMMIT}
+export DOCKER_FILE_CONTENT=
+export DOCKER_NO_CACHE=true
+export DOCKER_REMOTE_HOST=false
+export DOCKER_LOG_VOLUME=D:/code/docker/volume/logs
+export DOCKER_RUN_OPTIONS="-e CFG_ADDR=10.18.19.29:2181 -e DR_CFG_ZOOKEEPER_ENV_URL=10.18.19.24:52181 -e DLMC_CFG_JOB_ENABLED=true -e CFG_FILES=conf/context.xml,bin/setenv.sh"
+export DOCKER_RUN_COMMAND="catalina.sh jpda run"
+
 export CfgLabelBaseNode=instances
-export LogBasePath=D:/code/docker/volume/logs
-export RunOptions=
-export RunCmd=
-export NoCache=false
-export RemoteHost=false
+export ProjectRecipientList=
