@@ -1,20 +1,20 @@
 #!/bin/bash
 
 # basic info
-export ORG=loansystem
-export APP=hellowebapp
+export ORG=iakuh
+export APP=hello-webapp
 export ENV=dev
 
 # source code info
 export GIT_REPO=https://github.com/kayhu/hello-webapp.git
 export GIT_BRANCH=master
-export GIT_COMMIT=1
+export GIT_COMMIT=commit-id
 
 # docker related info
 export DOCKER_ADDRESSES=localhost:2375,28080:8080,28000:8000
-export DOCKER_REGISTRY=harbor.dev.chinacsci.com
+export DOCKER_REGISTRY=registry.cn-hangzhou.aliyuncs.com
 #export DOCKER_REGISTRY=harbor.dev.chinacsci.com
-export DOCKER_BASE_IMAGE=${DOCKER_REGISTRY}/loansystem/jdk8u92-tomcat8.5.29-gradle2.14.1:0.1
+export DOCKER_BASE_IMAGE=${DOCKER_REGISTRY}/iakuh/base:jdk8-tomcat8-gradle2.14.1
 export DOCKER_IMAGE=${DOCKER_REGISTRY}/${ORG}/${APP}-${ENV}
 export DOCKER_VERSIONED_IMAGE=${DOCKER_IMAGE}:${GIT_COMMIT}
 export DOCKER_TAGGED_IMAGE=${DOCKER_IMAGE}:${GIT_BRANCH}
@@ -31,11 +31,8 @@ RUN gradle clean war -p workspace/ && \
 RUN sed -i "7,18d" $CATALINA_HOME/conf/context.xml
 '
 export DOCKER_LOG_VOLUME_OUTER=D:/code/docker/volume/logs
-export DOCKER_LOG_VOLUME_INNER=/usr/local/apache-tomcat-8.5.29/logs
+export DOCKER_LOG_VOLUME_INNER=/usr/local/apache-tomcat-8.5.31/logs
 export DOCKER_RUN_OPTIONS="-e JPDA_ADDRESS=8000"
 export DOCKER_RUN_COMMAND="catalina.sh run"
 export DOCKER_NO_CACHE=false
 export DOCKER_REMOTE_HOST=false
-
-export CfgLabelBaseNode=instances
-export ProjectRecipientList=

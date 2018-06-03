@@ -1,4 +1,4 @@
-FROM harbor.dev.chinacsci.com/loansystem/jdk8u92-tomcat8.5.29-gradle2.14.1:0.1
+FROM registry.cn-hangzhou.aliyuncs.com/iakuh/base:jdk8-tomcat8-gradle2.14.1
 
 RUN mkdir -p workspace
 

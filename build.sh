@@ -9,8 +9,13 @@ cat >> Dockerfile << EOF
 ${DOCKER_FILE_CONTENT}
 EOF
 
-docker build --rm --no-cache=${DOCKER_NO_CACHE} -t ${DOCKER_VERSIONED_IMAGE} . && docker push ${DOCKER_VERSIONED_IMAGE} || exit 1
-docker rmi ${DOCKER_VERSIONED_IMAGE}
+docker build --rm --no-cache=${DOCKER_NO_CACHE} -t ${DOCKER_VERSIONED_IMAGE} .
+
+if ${DOCKER_REMOTE_HOST}
+then
+  docker push ${DOCKER_VERSIONED_IMAGE} || exit 1
+  docker rmi ${DOCKER_VERSIONED_IMAGE}
+fi
 }
 
 # 主函数
@@ -52,7 +57,10 @@ do
   app_id=`echo ${ORG}_${ENV}_${APP}_${app_ip}_${app_port} | sed 's/[^a-zA-Z0-9_]//g' | tr "[:upper:]" "[:lower:]"`
   app_hostname=`echo ${app_port}-${app_ip}-${APP}-${ENV}-${ORG} | sed 's/[^a-zA-Z0-9-]//g'| tr "[:upper:]" "[:lower:]"`
 
-  docker ${host_param} pull ${DOCKER_VERSIONED_IMAGE} >/dev/null # 同步镜像
+  if ${DOCKER_REMOTE_HOST}
+  then
+    docker ${host_param} pull ${DOCKER_VERSIONED_IMAGE} >/dev/null # 同步镜像
+  fi
   docker ${host_param} tag ${DOCKER_VERSIONED_IMAGE} ${DOCKER_TAGGED_IMAGE} # 新增镜像Tag
   before=`docker ${host_param} inspect -f '{{.Image}}' ${app_id} || echo 0` # 保留当前实例的镜像Id
   echo "Removing container ${app_id}"
