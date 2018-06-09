@@ -30,7 +30,7 @@ spec:
     spec:
       containers:
       - name: hello
-        image: harbor.dev.chinacsci.com/loansystem/hello-develop:1
+        image: harbor.dev.chinacsci.com/loansystem/hello-develop:${IMAGE_TAG}
         imagePullPolicy: Always
         ports:
         - containerPort: 8080
